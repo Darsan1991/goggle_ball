@@ -38,7 +38,7 @@ MonoBehaviour:
     leadersboardId: 
   _iosAppId: 
   _inAppSetting:
-    enable: 0
+    enable: 1
     removeAdsId: 
   _notificationSetting:
     enable: 0

@@ -3,8 +3,11 @@ using UnityEngine;
 
 public class AudioManager : Singleton<AudioManager>
 {
-    public static event Action<bool> SoundStateChanged; 
-   
+    public static event Action<bool> SoundStateChanged;
+
+    [SerializeField] private AudioClip _defaultClickClip;
+
+    public static AudioClip DefaultClickClip => Instance._defaultClickClip;
 
     public static bool IsSoundEnable
     {

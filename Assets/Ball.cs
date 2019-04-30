@@ -7,6 +7,7 @@ public class Ball : MonoBehaviour
     [SerializeField] private float _speed=10;
     [SerializeField] private float _radius;
     [SerializeField] private float _randomizeAngle=50f;
+    [SerializeField] private float _angularVelocity;
     private bool _active;
 
 
@@ -17,6 +18,7 @@ public class Ball : MonoBehaviour
     }
 
     public Vector2 Velocity { get; private set; }
+    public float AngularVelocity { get; private set; }
 
     public Vector2 CircleCenter { get; set; }
     public float CircleRadius { get; set; }
@@ -32,6 +34,7 @@ public class Ball : MonoBehaviour
             }
 
             _active = value;
+            AngularVelocity = Random.value > 0.5 ? _angularVelocity : -_angularVelocity;
             Velocity = Random.insideUnitCircle * Speed;
         }
     }
@@ -45,7 +48,7 @@ public class Ball : MonoBehaviour
         Velocity = Speed * Velocity.normalized;
 
         var targetPosition = transform.position + (Vector3)Velocity * Time.fixedDeltaTime;
-
+        transform.Rotate(Vector3.forward,AngularVelocity*Time.fixedDeltaTime);
         if (((Vector2) targetPosition - CircleCenter).magnitude >= CircleRadius-_radius)
         {
             
@@ -55,8 +58,8 @@ public class Ball : MonoBehaviour
 
             var reflectAngle = Mathf.Clamp(hitAngle + Random.Range(-_randomizeAngle / 2, _randomizeAngle / 2),10,hitAngle>50?20 : 75f);
             var reflectDirection = Quaternion.AngleAxis(Vector3.Cross(normal,-Velocity.normalized).z>0? -reflectAngle : reflectAngle, Vector3.forward) * normal;
-            Debug.Log($"Velocity Dir:{Velocity.normalized} Reflect Dir:{reflectDirection}");
-
+//            Debug.Log($"Velocity Dir:{Velocity.normalized} Reflect Dir:{reflectDirection}");
+            AngularVelocity = Random.value > 0.5 ? _angularVelocity : -_angularVelocity;
             Velocity = Speed * reflectDirection.normalized;
         }
         else

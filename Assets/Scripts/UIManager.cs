@@ -35,6 +35,7 @@ namespace Game
         {
             LevelManager.GameStarted += LevelManagerOnGameStarted;
             LevelManager.GameOver += LevelManagerOnGameOver;
+            LevelManager.BallsStopped += LevelManagerOnBallsStopped;
         }
 
 
@@ -42,16 +43,48 @@ namespace Game
         {
             LevelManager.GameStarted -= LevelManagerOnGameStarted;
             LevelManager.GameOver -= LevelManagerOnGameOver;
+            LevelManager.BallsStopped -= LevelManagerOnBallsStopped;
         }
 
-        private void LevelManagerOnGameOver()
+        private void LevelManagerOnBallsStopped(int roll, int leftScore, int rightScore)
         {
-            StartCoroutine(GameOver());
+            if(LevelManager.Instance.RollsLeft<=0)
+                return;
+            StartCoroutine(ShowCurrentRollPanel(roll, leftScore, rightScore));
         }
 
-        IEnumerator GameOver()
+        private IEnumerator ShowCurrentRollPanel(int roll, int leftScore, int rightScore)
+        {
+            var rollScorePanel = RollScorePanel;
+            rollScorePanel.MViewModel = new RollScorePanel.ViewModel
+            {
+                roll = roll,
+                currentRollScore = leftScore + rightScore,
+                totalScore = LevelManager.Instance.Score
+            };
+            rollScorePanel.Show();
+            yield return new WaitForSeconds(1);
+            rollScorePanel.Hide();
+            yield return new WaitUntil(() => rollScorePanel.CurrentShowState == ShowState.Hide);
+            LevelManager.Instance.ResetBalls();
+        }
+
+        private void LevelManagerOnGameOver(GameOverData gameOverData)
+        {
+            StartCoroutine(GameOver(gameOverData));
+        }
+
+        IEnumerator GameOver(GameOverData gameOverData)
         {
             yield return new WaitForSeconds(0.1f);
+            _gameOverPanel.MViewModel = new GameOverPanel.ViewModel
+            {
+                roll = LevelManager.Instance.TotalRollCount,
+                bonus = gameOverData.Bonus,
+                currentRollGamePoints = gameOverData.LeftScore+gameOverData.RightScore,
+                totalGamePoints = LevelManager.Instance.Score - gameOverData.Bonus,
+                totalPoints = LevelManager.Instance.Score
+            };
             _gameOverPanel.Show();
         }
 

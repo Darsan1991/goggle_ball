@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using UnityEngine;
 
 public partial class ResourceManager : Singleton<ResourceManager>
 {
@@ -9,6 +10,11 @@ public partial class ResourceManager : Singleton<ResourceManager>
     public static event Action<string> ProductPurchased;
     public static event Action<bool> ProductRestored;
 #endif
+
+    [SerializeField]private List<SlowBallProduct> _slowBallProducts = new List<SlowBallProduct>();
+
+
+    public static IEnumerable<SlowBallProduct> SlowBallProducts=> Instance._slowBallProducts;
 
     public static bool EnableAds
     {
@@ -24,6 +30,12 @@ public partial class ResourceManager : Singleton<ResourceManager>
         get { return PrefManager.GetInt(nameof(Coins));}
         set { PrefManager.SetInt(nameof(Coins),value); }
     }
+
+    public static int SlowBalls
+    {
+        get { return PrefManager.GetInt(nameof(SlowBalls),5);}
+        set { PrefManager.SetInt(nameof(SlowBalls),value); }
+    }
 #if IN_APP
 
     public static bool AbleToRestore => EnableAds;
@@ -33,17 +45,17 @@ public partial class ResourceManager : Singleton<ResourceManager>
     protected override void OnInit()
     {
         base.OnInit();
-        Purchaser = new Purchaser(new List<string>(), new[] { NO_ADS_PRODUCT_ID });
+        Purchaser = new Purchaser(_slowBallProducts.Select(product => product.ProductId),new List<string>());
         Purchaser.RestorePurchased += PurchaserOnRestorePurchased;
     }
 
     private void PurchaserOnRestorePurchased(bool success)
     {
-        if (EnableAds && Purchaser.ItemAlreadyPurchased(NO_ADS_PRODUCT_ID))
-        {
-            EnableAds = false;
-            ProductPurchased?.Invoke(NO_ADS_PRODUCT_ID);
-        }
+//        if (EnableAds && Purchaser.ItemAlreadyPurchased())
+//        {
+//            EnableAds = false;
+//            ProductPurchased?.Invoke();
+//        }
         ProductRestored?.Invoke(success);
     }
 
@@ -53,24 +65,37 @@ public partial class ResourceManager : Singleton<ResourceManager>
         Instance.Purchaser.Restore();
     }
 
-    public static void PurchaseNoAds(Action<bool> completed = null)
+    public static void PurchaseSlowBalls(string id, Action<bool> completed = null)
     {
-        if (!EnableAds)
-        {
-            return;
-        }
+        var ballProduct = SlowBallProducts.First(product => product.Id == id);
 
-        Instance.Purchaser.BuyProduct(NO_ADS_PRODUCT_ID, success =>
+        Instance.Purchaser.BuyProduct(ballProduct.ProductId, success =>
         {
             if (success)
-            {
-                EnableAds = false;
-            }
+                SlowBalls += ballProduct.Value;
+            Debug.Log(nameof(PurchaseSlowBalls) +" Success");
             completed?.Invoke(success);
-            if (success)
-                ProductPurchased?.Invoke(NO_ADS_PRODUCT_ID);
         });
     }
+
+//    public static void PurchaseNoAds(Action<bool> completed = null)
+//    {
+//        if (!EnableAds)
+//        {
+//            return;
+//        }
+//
+//        Instance.Purchaser.BuyProduct(NO_ADS_PRODUCT_ID, success =>
+//        {
+//            if (success)
+//            {
+//                EnableAds = false;
+//            }
+//            completed?.Invoke(success);
+//            if (success)
+//                ProductPurchased?.Invoke(NO_ADS_PRODUCT_ID);
+//        });
+//    }
 #endif
 }
 

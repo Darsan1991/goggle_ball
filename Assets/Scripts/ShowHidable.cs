@@ -52,7 +52,7 @@ public class ShowHidable : MonoBehaviour, IShowHideable
     public virtual void Show(bool animate = true, Action completed = null)
     {
         if (Showing)
-            throw new InvalidOperationException();
+            return;
 
         CurrentShowState = ShowState.ShowAnimation;
 

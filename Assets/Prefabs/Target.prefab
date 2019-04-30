@@ -126,15 +126,15 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _radiusAndPoints:
   - radius: 0.42
-    points: 0
+    points: 50
   - radius: 0.93
-    points: 0
+    points: 40
   - radius: 1.42
-    points: 0
+    points: 30
   - radius: 1.93
-    points: 0
+    points: 20
   - radius: 2.54
-    points: 0
+    points: 10
   _maxRadius: 2.49
   _ball: {fileID: 8990015167023905010}
 --- !u!1 &6464254357366274089
@@ -203,8 +203,8 @@ SpriteRenderer:
   m_AutoUVMaxDistance: 0.5
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
-  m_SortingLayerID: 0
-  m_SortingLayer: 0
+  m_SortingLayerID: -1341006619
+  m_SortingLayer: 1
   m_SortingOrder: 0
   m_Sprite: {fileID: 21300000, guid: ead693855c82f7e4c86279bf1e59d2fd, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
@@ -229,6 +229,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 505801ae7407d4b45b18af0423c2483f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _speed: 10
+  _speed: 18
   _radius: 0.25
   _randomizeAngle: 20
+  _angularVelocity: 1000

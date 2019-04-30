@@ -14,7 +14,7 @@ namespace MainMenu
 
         public void OnClickPlay()
         {
-            MyGame.GameManager.LoadScene("Main");
+            MyGame.GameManager.LoadScene("Main",false);
         }
 
         public void OnClickBuy()

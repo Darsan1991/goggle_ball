@@ -23,6 +23,7 @@ public class AspectFillImage : MonoBehaviour
 
     private IEnumerator Start()
     {
+        Refresh();
         yield return new WaitForEndOfFrame();
         Refresh();
         for (var i = 0; i < 2; i++)

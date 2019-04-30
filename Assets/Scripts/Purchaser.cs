@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Purchasing;
+
 #if IN_APP
 public class Purchaser : IStoreListener
 {

@@ -12,6 +12,7 @@ GameObject:
   - component: {fileID: 7080322089109062508}
   - component: {fileID: 6388228261011987032}
   - component: {fileID: 2401168680871785620}
+  - component: {fileID: 3445583396865727841}
   m_Layer: 5
   m_Name: Button
   m_TagString: Untagged
@@ -114,9 +115,33 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 6388228261011987032}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 3965311970084672262}
+        m_MethodName: OnClick
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
     m_TypeName: UnityEngine.UI.Button+ButtonClickedEvent, UnityEngine.UI, Version=1.0.0.0,
       Culture=neutral, PublicKeyToken=null
+--- !u!114 &3445583396865727841
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6964926871182521927}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0d324e8f4d21454a8de5a7d906cb2426, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _overrideClip: {fileID: 0}
 --- !u!1 &9150278254711365534
 GameObject:
   m_ObjectHideFlags: 0

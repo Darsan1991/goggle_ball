@@ -407,7 +407,7 @@ public partial class AdsManager
     }
 
     // ReSharper disable once FlagArgument
-    private void LevelManagerOnGameOver()
+    private void LevelManagerOnGameOver(GameOverData gameOverData)
     {
         if (!ResourceManager.EnableAds)
             return;

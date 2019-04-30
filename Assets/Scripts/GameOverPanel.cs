@@ -27,7 +27,7 @@ namespace Game
                 _rollText.text = $"ROLL {value.roll}: {value.currentRollGamePoints} POINTS";
                 _gamePointsText.text = $"GAME POINTS: {value.totalGamePoints} POINTS";
                 _bonusText.text = $"{value.bonus} BONUS POINTS";
-                _totalPointsText.text = $"TOTAL GAME POINTS: {value.totalGamePoints} POINTS";
+                _totalPointsText.text = $"TOTAL GAME POINTS: {value.totalPoints} POINTS";
             }
         }
 
@@ -46,7 +46,7 @@ namespace Game
 
         public void OnClickMainMenu()
         {
-            MyGame.GameManager.LoadScene("MainMenu");
+            MyGame.GameManager.LoadScene("MainMenu",false);
         }
 
         public void OnClickLeadersboard()
