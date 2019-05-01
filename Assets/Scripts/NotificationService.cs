@@ -1,4 +1,5 @@
-﻿using System;
+﻿#if UNITY_IOS
+using System;
 using UnityEngine;
 using UnityEngine.iOS;
 using CalendarUnit = UnityEngine.iOS.CalendarUnit;
@@ -73,3 +74,5 @@ public class NotificationService
 
     }
 }
+
+#endif

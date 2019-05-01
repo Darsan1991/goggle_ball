@@ -1,10 +1,15 @@
 ﻿using System;
+#if ADCLONY
+using AdColony;
+#endif
 using Game;
 #if ADMOB
 using GoogleMobileAds.Api;
 #endif
 using UnityEngine;
-
+#if ADMOB
+using InterstitialAd = GoogleMobileAds.Api.InterstitialAd;
+#endif
 #if UNITY_ADS
 using UnityEngine.Advertisements;
 #endif
@@ -14,8 +19,8 @@ public partial class AdsManager : Singleton<AdsManager>
 {
 #if ADMOB
     private static string ADMOB_INTERSTITIAL_ID => Application.platform == RuntimePlatform.Android
-        ? GameSettings.Default.AndroidAdmobSetting.interstitialId
-        : GameSettings.Default.IosAdmobSetting.interstitialId;
+        ? GameSettings.Default.AdsSettings.androidAdmobSetting.interstitialId
+        : GameSettings.Default.AdsSettings.iosAdmobSetting.interstitialId;
 
     private static string ADMOB_REWARDED_ID => Application.platform == RuntimePlatform.Android
         ? GameSettings.Default.AndroidAdmobSetting.admobRewardedId 
@@ -35,7 +40,7 @@ public partial class AdsManager : Singleton<AdsManager>
         get
         {
 #if ADMOB
-            return _rewardBaseVideo.IsLoaded();
+//            return _rewardBaseVideo.IsLoaded();
 #endif
             return false;
         }
@@ -65,8 +70,8 @@ public partial class AdsManager : Singleton<AdsManager>
     }
 
 #if ADMOB
-    private static RewardBasedVideoAd _rewardBaseVideo;
-    private static InterstitialAd _interstitialAd;
+//    private static RewardBasedVideoAd _rewardBaseVideo;
+    private static GoogleMobileAds.Api.InterstitialAd _interstitialAd;
 
 #endif
 
@@ -83,15 +88,15 @@ public partial class AdsManager : Singleton<AdsManager>
 
 
 #if ADMOB
-        _rewardBaseVideo = RewardBasedVideoAd.Instance;
-        _rewardBaseVideo.OnAdRewarded += RewardBaseVideoOnOnAdRewarded;
-        _rewardBaseVideo.OnAdFailedToLoad += (sender, args) =>
-        {
-//            PlatformUtils.ShowToast($"Video Ads Loaded Failed:{args.Message}");
-            Invoke(nameof(RequestAdmobRewardVideo), 6f);
-        };
-//        _rewardBaseVideo.OnAdLoaded += (sender, args) => { PlatformUtils.ShowToast($"Video Ads Loaded"); };
-        RequestAdmobRewardVideo();
+//        _rewardBaseVideo = RewardBasedVideoAd.Instance;
+//        _rewardBaseVideo.OnAdRewarded += RewardBaseVideoOnOnAdRewarded;
+//        _rewardBaseVideo.OnAdFailedToLoad += (sender, args) =>
+//        {
+////            PlatformUtils.ShowToast($"Video Ads Loaded Failed:{args.Message}");
+//            Invoke(nameof(RequestAdmobRewardVideo), 6f);
+//        };
+////        _rewardBaseVideo.OnAdLoaded += (sender, args) => { PlatformUtils.ShowToast($"Video Ads Loaded"); };
+//        RequestAdmobRewardVideo();
         RequestAdmobInterstitial();
 #endif
 
@@ -106,12 +111,12 @@ public partial class AdsManager : Singleton<AdsManager>
 
 #if ADMOB
 
-// ReSharper disable once TooManyDeclarations
-    private void RequestAdmobRewardVideo()
-    {
-        var request = new AdRequest.Builder().Build();
-        _rewardBaseVideo.LoadAd(request, ADMOB_REWARDED_ID);
-    }
+//// ReSharper disable once TooManyDeclarations
+//    private void RequestAdmobRewardVideo()
+//    {
+//        var request = new AdRequest.Builder().Build();
+//        _rewardBaseVideo.LoadAd(request, ADMOB_REWARDED_ID);
+//    }
 
 
     private void RequestAdmobInterstitial()
@@ -230,7 +235,7 @@ public partial class AdsManager
         {
             Instance._pendingCallback = onCompleted;
 #if ADMOB
-            _rewardBaseVideo.Show();
+//            _rewardBaseVideo.Show();
 #endif
         }
         else if(IsAdColonyAdsAvailable)
@@ -292,13 +297,16 @@ public partial class AdsManager
 
     void RequestAdColonyAd()
     {
+
         var adOptions = new AdOptions();
-        Ads.RequestInterstitialAd(Constants.CurrencyZoneID, adOptions);
+
+        var adColonySettings = Application.platform == RuntimePlatform.Android ? GameSettings.Default.AdsSettings.androidAdColonySettings : GameSettings.Default.AdsSettings.iosAdColonySettings;
+
+        Ads.RequestInterstitialAd(adColonySettings.currencyZoneId, adOptions);
     }
 
     void ConfigureAdColonyAds()
     {
-
         Ads.OnConfigurationCompleted += (list) =>
         {
             RequestAdColonyAd();
@@ -309,10 +317,11 @@ public partial class AdsManager
             RequestAdColonyAd();
         };
         Ads.OnRequestInterstitial += ad => { adColonyInterstitialAd = ad; };
+        var adColonySettings = Application.platform == RuntimePlatform.Android ? GameSettings.Default.AdsSettings.androidAdColonySettings : GameSettings.Default.AdsSettings.iosAdColonySettings;
 
         var appOptions = new AppOptions();
-        string[] zoneIDs = { Constants.InterstitialZoneID, Constants.CurrencyZoneID };
-        Ads.Configure(Constants.AppID, appOptions, zoneIDs);
+        string[] zoneIDs = {adColonySettings.interstitialZoneId, adColonySettings.currencyZoneId};
+        Ads.Configure(adColonySettings.appId, appOptions, zoneIDs);
     }
 }
 #endif

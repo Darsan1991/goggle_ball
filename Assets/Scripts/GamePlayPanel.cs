@@ -92,7 +92,7 @@ namespace Game
 
         public void OnClickSlowBall()
         {
-            if(ResourceManager.SlowBalls<=0)
+            if(ResourceManager.SlowBalls<=0 || LevelManager.SlowMove)
                 return;
 
             ResourceManager.SlowBalls--;
