@@ -9,6 +9,7 @@ using GoogleMobileAds.Api;
 using UnityEngine;
 #if ADMOB
 using InterstitialAd = GoogleMobileAds.Api.InterstitialAd;
+
 #endif
 #if UNITY_ADS
 using UnityEngine.Advertisements;
@@ -22,13 +23,45 @@ public partial class AdsManager : Singleton<AdsManager>
         ? GameSettings.Default.AdsSettings.androidAdmobSetting.interstitialId
         : GameSettings.Default.AdsSettings.iosAdmobSetting.interstitialId;
 
+    private static string ADMOB_BANNER_ID => Application.platform == RuntimePlatform.Android
+        ? GameSettings.Default.AdsSettings.androidAdmobSetting.bannerId
+        : GameSettings.Default.AdsSettings.iosAdmobSetting.bannerId;
+
     private static string ADMOB_REWARDED_ID => Application.platform == RuntimePlatform.Android
-        ? GameSettings.Default.AndroidAdmobSetting.admobRewardedId 
+        ? GameSettings.Default.AndroidAdmobSetting.admobRewardedId
         : GameSettings.Default.IosAdmobSetting.admobRewardedId;
 #endif
 
 
     public bool Initialized { get; private set; }
+
+//    public bool ShowBanner
+//    {
+//        get { return _showBanner; }
+//        set
+//        {
+//            if (value == _showBanner)
+//                return;
+//
+//            if (!ResourceManager.EnableAds && value)
+//            {
+//                return;
+//            }
+//
+//
+//            if (_bannerView != null)
+//            {
+//                if (value)
+//                    _bannerView.Show();
+//                else
+//                {
+//                    _bannerView.Hide();
+//                }
+//            }
+//
+//            _showBanner = value;
+//        }
+//    }
 
     private Action<bool> _pendingCallback;
 
@@ -72,6 +105,8 @@ public partial class AdsManager : Singleton<AdsManager>
 #if ADMOB
 //    private static RewardBasedVideoAd _rewardBaseVideo;
     private static GoogleMobileAds.Api.InterstitialAd _interstitialAd;
+    private BannerView _bannerView;
+    private bool _showBanner;
 
 #endif
 
@@ -98,37 +133,52 @@ public partial class AdsManager : Singleton<AdsManager>
 ////        _rewardBaseVideo.OnAdLoaded += (sender, args) => { PlatformUtils.ShowToast($"Video Ads Loaded"); };
 //        RequestAdmobRewardVideo();
         RequestAdmobInterstitial();
+//        RequestBanner();
+//        _bannerView.Hide();
 #endif
 
 #if ADCLONY
-       ConfigureAdColonyAds();
+        ConfigureAdColonyAds();
 #endif
 
         Initialized = true;
     }
 
 
-
 #if ADMOB
 
-//// ReSharper disable once TooManyDeclarations
-//    private void RequestAdmobRewardVideo()
-//    {
-//        var request = new AdRequest.Builder().Build();
-//        _rewardBaseVideo.LoadAd(request, ADMOB_REWARDED_ID);
-//    }
+    //// ReSharper disable once TooManyDeclarations
+    //    private void RequestAdmobRewardVideo()
+    //    {
+    //        var request = new AdRequest.Builder().Build();
+    //        _rewardBaseVideo.LoadAd(request, ADMOB_REWARDED_ID);
+    //    }
+
+    private void RequestBanner()
+    {
+        // Create a 320x50 banner at the top of the screen.
+        _bannerView = new BannerView(ADMOB_BANNER_ID, AdSize.Banner, AdPosition.Top);
+        _bannerView.OnAdFailedToLoad += (sender, args) => { Debug.Log("Banner Failed To Load:" + args.Message); };
+        // Create an empty ad request.
+        var request = new AdRequest.Builder().AddExtra("max_ad_content_rating", "G").Build();
+
+        // Load the banner with the request.
+        _bannerView.LoadAd(request);
+    }
 
 
     private void RequestAdmobInterstitial()
     {
         _interstitialAd = new InterstitialAd(ADMOB_INTERSTITIAL_ID);
+
         _interstitialAd.OnAdClosed += InterstitialAdOnOnAdClosed;
         _interstitialAd.OnAdFailedToLoad += (sender, args) =>
         {
+            Debug.Log("Interstial Failed To Load:" + args.Message);
             Instance.Invoke(nameof(RequestAdmobInterstitial), 10);
         };
 
-        var request = new AdRequest.Builder().Build();
+        var request = new AdRequest.Builder().AddExtra("max_ad_content_rating", "G").Build();
         _interstitialAd.LoadAd(request);
     }
 
@@ -147,7 +197,7 @@ public partial class AdsManager : Singleton<AdsManager>
 
 
 #if UNITY_ADS
-    // ReSharper disable once FlagArgument
+// ReSharper disable once FlagArgument
     private static void ShowUnityVideoAds(Action<bool> completed = null)
     {
         if (!Advertisement.IsReady())
@@ -238,7 +288,7 @@ public partial class AdsManager
 //            _rewardBaseVideo.Show();
 #endif
         }
-        else if(IsAdColonyAdsAvailable)
+        else if (IsAdColonyAdsAvailable)
         {
             Instance._pendingCallback = onCompleted;
 #if ADCLONY
@@ -278,7 +328,6 @@ public partial class AdsManager
     }
 
 
-
     public static bool IsInterstitialAvailable()
     {
         var available = //Application.internetReachability != NetworkReachability.NotReachable ||
@@ -293,31 +342,31 @@ public partial class AdsManager
 {
     private static AdColony.InterstitialAd adColonyInterstitialAd;
 
-    
 
     void RequestAdColonyAd()
     {
-
         var adOptions = new AdOptions();
 
-        var adColonySettings = Application.platform == RuntimePlatform.Android ? GameSettings.Default.AdsSettings.androidAdColonySettings : GameSettings.Default.AdsSettings.iosAdColonySettings;
+        var adColonySettings = Application.platform == RuntimePlatform.Android
+            ? GameSettings.Default.AdsSettings.androidAdColonySettings
+            : GameSettings.Default.AdsSettings.iosAdColonySettings;
 
         Ads.RequestInterstitialAd(adColonySettings.currencyZoneId, adOptions);
+        Ads.OnRequestInterstitialFailed += () => Debug.Log("AdClony Failed to load");
     }
 
     void ConfigureAdColonyAds()
     {
-        Ads.OnConfigurationCompleted += (list) =>
-        {
-            RequestAdColonyAd();
-        };
+        Ads.OnConfigurationCompleted += (list) => { RequestAdColonyAd(); };
         Ads.OnClosed += ad =>
         {
             _pendingCallback?.Invoke(true);
             RequestAdColonyAd();
         };
         Ads.OnRequestInterstitial += ad => { adColonyInterstitialAd = ad; };
-        var adColonySettings = Application.platform == RuntimePlatform.Android ? GameSettings.Default.AdsSettings.androidAdColonySettings : GameSettings.Default.AdsSettings.iosAdColonySettings;
+        var adColonySettings = Application.platform == RuntimePlatform.Android
+            ? GameSettings.Default.AdsSettings.androidAdColonySettings
+            : GameSettings.Default.AdsSettings.iosAdColonySettings;
 
         var appOptions = new AppOptions();
         string[] zoneIDs = {adColonySettings.interstitialZoneId, adColonySettings.currencyZoneId};
@@ -331,12 +380,13 @@ public partial class AdsManager
 {
     private static int AdsPassLeftCount
     {
-        get {
-
+        get
+        {
             if (!PlayerPrefs.HasKey(nameof(AdsPassLeftCount)))
             {
                 SetForNextAds();
             }
+
             return PlayerPrefs.GetInt(nameof(AdsPassLeftCount));
         }
         set { PlayerPrefs.SetInt(nameof(AdsPassLeftCount), value); }
@@ -348,15 +398,16 @@ public partial class AdsManager
     {
         if (!ResourceManager.EnableAds)
             return;
+        if(AdsPassLeftCount>0)
+        {
+            PassAdsIfCan();
+        }
 
         if (AdsPassLeftCount <= 0)
         {
             ShowAdsIfPassedIfCan();
         }
-        else
-        {
-            PassAdsIfCan();
-        }
+
     }
 
     public static void ShowAdsIfPassedIfCan()
@@ -370,10 +421,18 @@ public partial class AdsManager
                 ShowInterstitial();
                 SetForNextAds();
             }
-            else
+            else if(IsVideoAvailable())
             {
                 ShowVideoAds();
                 SetForNextAds();
+            }
+            else
+            {
+                if(IsInterstitialAvailable())
+                {
+                    ShowInterstitial();
+                    SetForNextAds();
+                }
             }
         }
     }
@@ -383,13 +442,16 @@ public partial class AdsManager
         if (UnityEngine.Random.value < GameSettings.Default.AdsSettings.videoAdsFrequency)
         {
             NextVideoAds = true;
-            AdsPassLeftCount = UnityEngine.Random.Range(GameSettings.Default.AdsSettings.minAndMaxGameOversBetweenVideoAds.x,
+            AdsPassLeftCount = UnityEngine.Random.Range(
+                GameSettings.Default.AdsSettings.minAndMaxGameOversBetweenVideoAds.x,
                 GameSettings.Default.AdsSettings.minAndMaxGameOversBetweenVideoAds.y);
         }
         else
         {
             NextVideoAds = false;
-            AdsPassLeftCount = UnityEngine.Random.Range(GameSettings.Default.AdsSettings.minAndMaxGameOversBetweenInterstitialAds.x, GameSettings.Default.AdsSettings.minAndMaxGameOversBetweenInterstitialAds.y);
+            AdsPassLeftCount =
+                UnityEngine.Random.Range(GameSettings.Default.AdsSettings.minAndMaxGameOversBetweenInterstitialAds.x,
+                    GameSettings.Default.AdsSettings.minAndMaxGameOversBetweenInterstitialAds.y);
         }
     }
 
@@ -407,20 +469,30 @@ public partial class AdsManager
 {
     private void OnEnableAdsPartial()
     {
-        LevelManager.GameOver += LevelManagerOnGameOver;
+        LevelManager.BallsStopped +=LevelManagerOnBallsStopped;
+//        ResourceManager.PremiumStateChanged += ResourceManagerOnPremiumStateChanged;
     }
 
-    private void OnDisableAdsPartial()
-    {
-        LevelManager.GameOver -= LevelManagerOnGameOver;
-    }
-
-    // ReSharper disable once FlagArgument
-    private void LevelManagerOnGameOver(GameOverData gameOverData)
+    private void LevelManagerOnBallsStopped(int arg1, int arg2, int arg3)
     {
         if (!ResourceManager.EnableAds)
             return;
 
         ShowOrPassAdsIfCan();
     }
+
+//    private void ResourceManagerOnPremiumStateChanged(bool premium)
+//    {
+//        if (premium)
+//            ShowBanner = false;
+//    }
+
+    private void OnDisableAdsPartial()
+    {
+        LevelManager.BallsStopped -= LevelManagerOnBallsStopped;
+
+        //        ResourceManager.PremiumStateChanged -= ResourceManagerOnPremiumStateChanged;
+    }
+
+
 }

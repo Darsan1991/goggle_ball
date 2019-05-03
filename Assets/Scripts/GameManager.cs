@@ -39,6 +39,7 @@ namespace MyGame
         {
             base.OnInit();
             Application.targetFrameRate = 60;
+            Screen.sleepTimeout = SleepTimeout.NeverSleep;
 
 #if NOTIFICATION
             OnInitNotification();

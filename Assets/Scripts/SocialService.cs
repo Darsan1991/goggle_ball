@@ -1,5 +1,7 @@
 ﻿#if GAME_SERVICE
+#if UNITY_ANDROID
 using GooglePlayGames;
+#endif
 using UnityEngine;
 
 public class SocialService : Singleton<SocialService>

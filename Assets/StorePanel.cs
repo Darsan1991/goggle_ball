@@ -12,6 +12,16 @@ public class StorePanel : ShowHidable
 
     private void TileUIOnClicked(StoreTileUI tile)
     {
-        ResourceManager.PurchaseSlowBalls(tile.SlowBall.Id);
+        if(tile.SlowBall!=null)
+        {
+            ResourceManager.PurchaseSlowBalls(tile.SlowBall.Id);
+        }
+        else if (tile.IsAdsFree && ResourceManager.EnableAds)
+        {
+            ResourceManager.PurchaseNoAds(success =>
+            {
+                tile.gameObject.SetActive(!success);
+            });
+        }
     }
 }

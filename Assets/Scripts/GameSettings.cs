@@ -101,6 +101,7 @@ public struct AdmobSetting
 {
     public bool enable;
     public string interstitialId;
+    public string bannerId;
     public string admobRewardedId;
 }
 

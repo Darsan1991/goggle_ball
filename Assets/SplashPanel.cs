@@ -57,6 +57,7 @@ public class SplashPanel : MonoBehaviour
         PlayClipIfCan(_flashClip);
         yield return new WaitUntil(() => _ballAnim.GetCurrentAnimatorStateInfo(0).normalizedTime > 0.93f);
         PlayClipIfCan(_finalSplashClip);
+        yield return new WaitForSeconds(0.3f);
         _characterAnim.gameObject.SetActive(true);
         yield return new WaitForSeconds(_finalSplashClip?.length ?? 4);
         GameManager.LoadScene("MainMenu",false);

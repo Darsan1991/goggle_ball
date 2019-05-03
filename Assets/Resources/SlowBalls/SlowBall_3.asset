@@ -12,5 +12,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 076fe88cafad4b0fbbec02801f1ad19f, type: 3}
   m_Name: SlowBall_3
   m_EditorClassIdentifier: 
+  _name: 25 Balls
+  _price: 3.99
   _productId: unity.slowball3
-  _value: 5
+  _value: 25
+  _includeAdsFree: 1

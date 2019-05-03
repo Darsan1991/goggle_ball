@@ -15,10 +15,12 @@ MonoBehaviour:
   _iosAdmobSetting:
     enable: 0
     interstitialId: 
+    bannerId: 
     admobRewardedId: 
   _androidAdmobSetting:
     enable: 0
     interstitialId: 
+    bannerId: 
     admobRewardedId: 
   _androidAdColonySetting:
     enable: 0
@@ -31,15 +33,15 @@ MonoBehaviour:
     interstitialZoneId: 
     currencyZoneId: 
   _iosLeadersboardSetting:
-    enable: 0
-    leadersboardId: 
+    enable: 1
+    leadersboardId: com.ball.leadersboard
   _androidLeadersboardSetting:
-    enable: 0
-    leadersboardId: 
-  _iosAppId: 
+    enable: 1
+    leadersboardId: CgkIj6Lp8M4JEAIQAA
+  _iosAppId: 1462255116
   _inAppSetting:
     enable: 1
-    removeAdsId: 
+    removeAdsId: goggleball.noads
   _notificationSetting:
     enable: 0
     comebackMessages: []
@@ -51,23 +53,25 @@ MonoBehaviour:
     rewards: 640000006400000064000000
   _adsSettings:
     iosAdColonySettings:
-      enable: 0
-      appId: 
-      interstitialZoneId: 
-      currencyZoneId: 
+      enable: 1
+      appId: appe345f76ef1d443c6bc
+      interstitialZoneId: vz11751110b75940b7b6
+      currencyZoneId: vz11751110b75940b7b6
     androidAdColonySettings:
       enable: 1
-      appId: app185a7e71e1714831a49ec7
-      interstitialZoneId: vz06e8c32a037749699e7050
-      currencyZoneId: vz1fd5a8b2bf6841a0a4b826
+      appId: app07a0eb4d8e614bfa8e
+      interstitialZoneId: vz0738b0812ca84295b8
+      currencyZoneId: vz0738b0812ca84295b8
     iosAdmobSetting:
-      enable: 0
-      interstitialId: 
+      enable: 1
+      interstitialId: ca-app-pub-1414719774626316/8754928274
+      bannerId: ca-app-pub-1414719774626316/7795756744
       admobRewardedId: 
     androidAdmobSetting:
       enable: 1
-      interstitialId: ca-app-pub-3940256099942544/1033173712
+      interstitialId: ca-app-pub-1414719774626316/5281274043
+      bannerId: ca-app-pub-1414719774626316/5537614288
       admobRewardedId: 
-    minAndMaxGameOversBetweenInterstitialAds: {x: 1, y: 2}
-    minAndMaxGameOversBetweenVideoAds: {x: 1, y: 2}
-    videoAdsFrequency: 0.5
+    minAndMaxGameOversBetweenInterstitialAds: {x: 6, y: 6}
+    minAndMaxGameOversBetweenVideoAds: {x: 6, y: 6}
+    videoAdsFrequency: 0.4

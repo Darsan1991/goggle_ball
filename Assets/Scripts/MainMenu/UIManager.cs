@@ -18,6 +18,7 @@ namespace MainMenu
         private void Awake()
         {
             Instance = this;
+//            AdsManager.Instance.ShowBanner = true;
         }
     }
 }
