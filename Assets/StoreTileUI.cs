@@ -39,4 +39,10 @@ public class StoreTileUI : MonoBehaviour
     {
         Clicked?.Invoke(this);
     }
+
+    private void Update()
+    {
+        if (IsAdsFree && !ResourceManager.EnableAds)
+            gameObject.SetActive(false);
+    }
 }

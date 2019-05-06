@@ -48,26 +48,23 @@ public partial class ResourceManager : Singleton<ResourceManager>
     protected override void OnInit()
     {
         base.OnInit();
+#if UNITY_IOS
         Purchaser = new Purchaser(
-            _slowBallProducts.Where(product => !product.IncludeAdsFree).Select(product => product.ProductId),
-            _slowBallProducts.Where(product => product.IncludeAdsFree).Select(product => product.ProductId).Append(NO_ADS_PRODUCT_ID));
+            _slowBallProducts.Select(product => product.ProductId),
+            new List<string>{NO_ADS_PRODUCT_ID});
+#else
+        Purchaser = new Purchaser(
+            _slowBallProducts.Select(product => product.ProductId).Append(NO_ADS_PRODUCT_ID),new List<string>());
+#endif
         Purchaser.RestorePurchased += PurchaserOnRestorePurchased;
     }
 
     private void PurchaserOnRestorePurchased(bool success)
     {
-        if (EnableAds && (_slowBallProducts.Where(product => product.IncludeAdsFree)
-                .Any(product => Purchaser.ItemAlreadyPurchased(product.ProductId)) || Purchaser.ItemAlreadyPurchased(NO_ADS_PRODUCT_ID)))
+        if (EnableAds &&  Purchaser.ItemAlreadyPurchased(NO_ADS_PRODUCT_ID))
         {
             EnableAds = false;
-            var ballProduct = _slowBallProducts.Where(product => product.IncludeAdsFree)
-                .FirstOrDefault(product => Purchaser.ItemAlreadyPurchased(product.ProductId));
-
-            if(ballProduct!=null)
-            ProductPurchased?.Invoke(ballProduct.ProductId);
-
-            if(Purchaser.ItemAlreadyPurchased(NO_ADS_PRODUCT_ID))
-                ProductPurchased?.Invoke(NO_ADS_PRODUCT_ID);
+            ProductPurchased?.Invoke(NO_ADS_PRODUCT_ID);
         }
 
         ProductRestored?.Invoke(success);
@@ -121,4 +118,4 @@ public partial class ResourceManager : Singleton<ResourceManager>
         });
     }
 #endif
-}
+    }

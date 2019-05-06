@@ -155,8 +155,9 @@ PlayerSettings:
   applicationIdentifier:
     Android: com.acts.goggleBall
     iOS: com.acts.goggleBall
-  buildNumber: {}
-  AndroidBundleVersionCode: 5
+  buildNumber:
+    iOS: 1
+  AndroidBundleVersionCode: 6
   AndroidMinSdkVersion: 16
   AndroidTargetSdkVersion: 0
   AndroidPreferredInstallLocation: 1
